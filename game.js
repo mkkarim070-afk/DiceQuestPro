@@ -1,402 +1,265 @@
 // ============================================
-// WILD DICE QUEST - COMPLETE GAME LOGIC
-// Professional Version - No Bugs
+// PROFESSIONAL GAME CONFIGURATION
 // ============================================
-
-// GAME CONFIGURATION
 const CONFIG = {
-    currentLevel: 1,
-    totalLevels: 100,
-    diceCount: 15,
-    score: 0,
+    // Game Settings
     soundEnabled: true,
-    vibrationEnabled: true,
     musicEnabled: true,
+    vibrationEnabled: false,
+    notificationsEnabled: true,
+    
+    // Game State
+    currentLevel: 1,
+    totalLevels: 10,
+    score: 0,
+    diceCount: 10,
+    totalRolls: 0,
     maxSelection: 0,
     selectedTiles: [],
-    totalRolls: 0,
     hints: 3,
-    extraDice: 0
-};
-
-// TILE CATEGORIES WITH EXACT DISTRIBUTION
-const TILE_CATEGORIES = {
-    animals: {
-        name: "Animals",
-        icon: "🦁",
-        color: "#FF6B35",
-        percentage: 30,
-        types: [
-            { name: "Lion", icon: "🦁", points: 100 },
-            { name: "Elephant", icon: "🐘", points: 100 },
-            { name: "Giraffe", icon: "🦒", points: 100 },
-            { name: "Panda", icon: "🐼", points: 100 },
-            { name: "Tiger", icon: "🐯", points: 100 },
-            { name: "Fox", icon: "🦊", points: 100 },
-            { name: "Bear", icon: "🐻", points: 100 },
-            { name: "Zebra", icon: "🦓", points: 100 },
-            { name: "Rhino", icon: "🦏", points: 100 },
-            { name: "Kangaroo", icon: "🦘", points: 100 },
-            { name: "Hippo", icon: "🦛", points: 100 },
-            { name: "Monkey", icon: "🐵", points: 100 }
-        ]
-    },
-    birds: {
-        name: "Birds",
-        icon: "🦜",
-        color: "#4CC9F0",
-        percentage: 25,
-        types: [
-            { name: "Parrot", icon: "🦜", points: 100 },
-            { name: "Eagle", icon: "🦅", points: 100 },
-            { name: "Peacock", icon: "🦚", points: 100 },
-            { name: "Owl", icon: "🦉", points: 100 },
-            { name: "Flamingo", icon: "🦩", points: 100 },
-            { name: "Swan", icon: "🦢", points: 100 },
-            { name: "Hummingbird", icon: "🐦", points: 100 },
-            { name: "Penguin", icon: "🐧", points: 100 },
-            { name: "Rooster", icon: "🐓", points: 100 },
-            { name: "Duck", icon: "🦆", points: 100 }
-        ]
-    },
-    flowers: {
-        name: "Flowers",
-        icon: "🌹",
-        color: "#F72585",
-        percentage: 25,
-        types: [
-            { name: "Rose", icon: "🌹", points: 100 },
-            { name: "Sunflower", icon: "🌻", points: 100 },
-            { name: "Tulip", icon: "🌷", points: 100 },
-            { name: "Cherry Blossom", icon: "🌸", points: 100 },
-            { name: "Lotus", icon: "🪷", points: 100 },
-            { name: "Hibiscus", icon: "🌺", points: 100 },
-            { name: "Lavender", icon: "🪻", points: 100 },
-            { name: "Daisy", icon: "🌼", points: 100 },
-            { name: "Orchid", icon: "💐", points: 100 },
-            { name: "Cactus", icon: "🌵", points: 100 }
-        ]
-    },
-    fruits: {
-        name: "Fruits",
-        icon: "🍎",
-        color: "#FFBE0B",
-        percentage: 20,
-        types: [
-            { name: "Apple", icon: "🍎", points: 100 },
-            { name: "Banana", icon: "🍌", points: 100 },
-            { name: "Grapes", icon: "🍇", points: 100 },
-            { name: "Orange", icon: "🍊", points: 100 },
-            { name: "Strawberry", icon: "🍓", points: 100 },
-            { name: "Pineapple", icon: "🍍", points: 100 },
-            { name: "Watermelon", icon: "🍉", points: 100 },
-            { name: "Mango", icon: "🥭", points: 100 },
-            { name: "Peach", icon: "🍑", points: 100 },
-            { name: "Pear", icon: "🍐", points: 100 }
-        ]
+    extraDice: 0,
+    gameTime: 60,
+    gameTimer: null,
+    
+    // Categories with professional images (using Font Awesome icons)
+    categories: {
+        animals: {
+            name: "Animals",
+            icon: "🐾",
+            color: "#4361ee",
+            points: 100,
+            tiles: ["🐘", "🦁", "🐼", "🦊", "🐨", "🐯", "🦄", "🐬"]
+        },
+        birds: {
+            name: "Birds",
+            icon: "🦜",
+            color: "#4cc9f0",
+            points: 120,
+            tiles: ["🦅", "🦚", "🦢", "🦜", "🦩", "🦉", "🐦", "🦆"]
+        },
+        fruits: {
+            name: "Fruits",
+            icon: "🍓",
+            color: "#f72585",
+            points: 80,
+            tiles: ["🍎", "🍌", "🍇", "🍓", "🍉", "🍑", "🍒", "🥭"]
+        },
+        flowers: {
+            name: "Flowers",
+            icon: "🌸",
+            color: "#06d6a0",
+            points: 90,
+            tiles: ["🌹", "🌺", "🌻", "🌸", "🌼", "💐", "🥀", "🪷"]
+        },
+        food: {
+            name: "Food",
+            icon: "🍕",
+            color: "#ffd166",
+            points: 70,
+            tiles: ["🍕", "🍔", "🍩", "🍦", "🍫", "🧁", "🍭", "🍿"]
+        },
+        travel: {
+            name: "Travel",
+            icon: "✈️",
+            color: "#7209b7",
+            points: 110,
+            tiles: ["✈️", "🚀", "🚗", "🚢", "🚂", "🏍️", "🚁", "🛶"]
+        }
     }
 };
 
-// GAME STATE
-let gameState = {
+// Game State Management
+const gameState = {
     currentTargets: {},
-    diceAI: null,
-    lastSixRoll: -5,
     levelComplete: false,
-    playerData: null,
-    achievements: []
-};
-
-// VOICE FEEDBACK SYSTEM
-const VOICE_FEEDBACK = {
-    good: ["Good!", "Nice!", "Well done!", "Cool!"],
-    great: ["Great!", "Excellent!", "Awesome!", "Super!"],
-    amazing: ["Amazing!", "Fantastic!", "Wonderful!", "Brilliant!"],
-    perfect: ["Perfect!", "Unbelievable!", "Masterful!", "Incredible!"],
-    
-    getFeedback(score) {
-        if (score >= 1000) return this.perfect[Math.floor(Math.random() * this.perfect.length)];
-        if (score >= 500) return this.amazing[Math.floor(Math.random() * this.amazing.length)];
-        if (score >= 200) return this.great[Math.floor(Math.random() * this.great.length)];
-        return this.good[Math.floor(Math.random() * this.good.length)];
-    }
-};
-
-// DICE AI CLASS
-class DiceAI {
-    constructor() {
-        this.rollHistory = [];
-        this.consecutiveLow = 0;
-        this.playerStuck = false;
-        this.specialMoment = false;
-    }
-    
-    calculateRoll() {
-        const level = CONFIG.currentLevel;
-        const rollsLeft = CONFIG.diceCount;
-        const totalRolls = CONFIG.totalRolls;
-        const lastSix = gameState.lastSixRoll;
-        
-        // BASE RANDOM ROLL
-        let roll = Math.floor(Math.random() * 6) + 1;
-        
-        // === AI STRATEGIC LOGIC ===
-        
-        // 1. FIRST ROLL OF LEVEL - Give good number
-        if (totalRolls === 0) {
-            roll = this.weightedRandom([4, 5, 6, 3, 2, 1], [25, 25, 20, 15, 10, 5]);
-        }
-        
-        // 2. PLAYER STUCK - Give six to help
-        else if (this.playerStuck && totalRolls - lastSix > 2) {
-            roll = 6;
-            gameState.lastSixRoll = totalRolls;
-            this.specialMoment = true;
-        }
-        
-        // 3. LAST FEW DICE - Increase chance of six
-        else if (rollsLeft <= 3 && totalRolls - lastSix > 1) {
-            if (Math.random() < 0.6) {
-                roll = 6;
-                gameState.lastSixRoll = totalRolls;
-                this.specialMoment = true;
-            }
-        }
-        
-        // 4. SPECIAL MOMENT - Strategic six (like Ludo)
-        else if (this.shouldGiveSpecialSix()) {
-            roll = 6;
-            gameState.lastSixRoll = totalRolls;
-            this.specialMoment = true;
-        }
-        
-        // 5. AFTER CONSECUTIVE LOW ROLLS - Give high
-        else if (this.consecutiveLow >= 2) {
-            roll = this.weightedRandom([4, 5, 6, 3, 2, 1], [30, 25, 20, 15, 7, 3]);
-            this.consecutiveLow = 0;
-        }
-        
-        // Update history and state
-        this.rollHistory.push(roll);
-        this.updatePlayerState(roll);
-        
-        return roll;
-    }
-    
-    shouldGiveSpecialSix() {
-        const rolls = CONFIG.totalRolls;
-        const lastSix = gameState.lastSixRoll;
-        const completion = this.calculateTargetCompletion();
-        
-        // Haven't gotten six in long time
-        if (rolls - lastSix > 7) return true;
-        
-        // Player needs help to complete level
-        if (completion < 0.3 && CONFIG.diceCount < 8) return Math.random() < 0.5;
-        
-        // Random strategic moment (10% chance)
-        if (Math.random() < 0.1 && rolls - lastSix > 4) return true;
-        
-        return false;
-    }
-    
-    updatePlayerState(roll) {
-        // Track consecutive low rolls
-        if (roll <= 2) {
-            this.consecutiveLow++;
-        } else {
-            this.consecutiveLow = 0;
-        }
-        
-        // Detect if player is stuck
-        const completion = this.calculateTargetCompletion();
-        const expectedProgress = CONFIG.totalRolls * 0.15;
-        this.playerStuck = completion < expectedProgress - 0.25;
-    }
-    
-    calculateTargetCompletion() {
-        const totalNeeded = Object.values(gameState.currentTargets).reduce((a, b) => a + b.needed, 0);
-        const totalCollected = Object.values(gameState.currentTargets).reduce((a, b) => a + b.collected, 0);
-        return totalNeeded > 0 ? totalCollected / totalNeeded : 0;
-    }
-    
-    weightedRandom(values, weights) {
-        const total = weights.reduce((a, b) => a + b, 0);
-        const random = Math.random() * total;
-        let sum = 0;
-        
-        for (let i = 0; i < values.length; i++) {
-            sum += weights[i];
-            if (random < sum) return values[i];
-        }
-        return values[0];
-    }
-    
-    handleSpecialSix() {
-        if (this.specialMoment) {
-            // Give extra dice on special six
-            CONFIG.extraDice++;
-            CONFIG.diceCount++;
-            showMessage("🎉 Special Six! +1 Extra Dice!", "success");
-            updateDiceDisplay();
-            this.specialMoment = false;
-        }
-    }
-}
-
-// PLAYER DATA MANAGER
-class PlayerDataManager {
-    constructor() {
-        this.load();
-    }
-    
-    save() {
-        const data = {
-            level: CONFIG.currentLevel,
-            score: CONFIG.score,
-            hints: CONFIG.hints,
-            extraDice: CONFIG.extraDice,
-            settings: {
-                sound: CONFIG.soundEnabled,
-                music: CONFIG.musicEnabled,
-                vibration: CONFIG.vibrationEnabled
-            },
-            achievements: gameState.achievements,
-            lastPlayed: new Date().toISOString()
-        };
-        
-        try {
-            localStorage.setItem('wildDiceQuest', JSON.stringify(data));
-            return true;
-        } catch (e) {
-            console.error("Save failed:", e);
-            return false;
-        }
-    }
-    
-    load() {
-        try {
-            const saved = localStorage.getItem('wildDiceQuest');
+    playerData: {
+        save: function() {
+            localStorage.setItem('tileMasterPro_save', JSON.stringify({
+                level: CONFIG.currentLevel,
+                score: CONFIG.score,
+                dice: CONFIG.diceCount,
+                hints: CONFIG.hints,
+                extraDice: CONFIG.extraDice,
+                settings: {
+                    sound: CONFIG.soundEnabled,
+                    music: CONFIG.musicEnabled,
+                    vibration: CONFIG.vibrationEnabled
+                }
+            }));
+        },
+        load: function() {
+            const saved = localStorage.getItem('tileMasterPro_save');
             if (saved) {
                 const data = JSON.parse(saved);
-                
                 CONFIG.currentLevel = data.level || 1;
                 CONFIG.score = data.score || 0;
+                CONFIG.diceCount = data.dice || 10;
                 CONFIG.hints = data.hints || 3;
                 CONFIG.extraDice = data.extraDice || 0;
                 
                 if (data.settings) {
                     CONFIG.soundEnabled = data.settings.sound !== false;
                     CONFIG.musicEnabled = data.settings.music !== false;
-                    CONFIG.vibrationEnabled = data.settings.vibration !== false;
+                    CONFIG.vibrationEnabled = data.settings.vibration || false;
                 }
-                
-                gameState.achievements = data.achievements || [];
-                
-                showMessage("Game loaded from save!", "info");
-                return true;
             }
-        } catch (e) {
-            console.error("Load failed:", e);
+        },
+        reset: function() {
+            localStorage.removeItem('tileMasterPro_save');
+            location.reload();
         }
-        return false;
     }
+};
+
+// Voice Feedback System
+const VOICE_FEEDBACK = {
+    messages: [
+        { min: 0, max: 50, text: "Good start!" },
+        { min: 51, max: 100, text: "Nice!" },
+        { min: 101, max: 200, text: "Great!" },
+        { min: 201, max: 300, text: "Excellent!" },
+        { min: 301, max: 500, text: "Amazing!" },
+        { min: 501, max: 1000, text: "Unbelievable!" },
+        { min: 1001, max: Infinity, text: "FANTASTIC!" }
+    ],
     
-    reset() {
-        localStorage.removeItem('wildDiceQuest');
-        showMessage("Game data reset!", "info");
+    getFeedback: function(points) {
+        for (const msg of this.messages) {
+            if (points >= msg.min && points <= msg.max) {
+                return msg.text;
+            }
+        }
+        return "Good!";
     }
-}
+};
 
 // ============================================
 // INITIALIZATION
 // ============================================
-
-function initGame() {
-    // Initialize systems
-    gameState.diceAI = new DiceAI();
-    gameState.playerData = new PlayerDataManager();
+window.addEventListener('DOMContentLoaded', function() {
+    // Show loading screen
+    setTimeout(() => {
+        document.getElementById('loadingScreen').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('loadingScreen').style.display = 'none';
+            document.getElementById('gameContainer').style.display = 'flex';
+        }, 500);
+    }, 1500);
     
+    // Load saved game
+    gameState.playerData.load();
+    
+    // Initialize game
+    initializeGame();
+    
+    // Set up event listeners
+    setupEventListeners();
+});
+
+function initializeGame() {
     // Generate first level
     generateLevel();
     
-    // Setup event listeners
-    setupEventListeners();
-    
-    // Update UI
-    updateDisplay();
-    
-    // Show welcome message
-    setTimeout(() => {
-        showMessage("Welcome to Wild Dice Quest! 🎲", "info");
-    }, 1000);
-}
-
-// ============================================
-// LEVEL MANAGEMENT
-// ============================================
-
-function generateLevel() {
-    // Reset level state
-    CONFIG.selectedTiles = [];
-    CONFIG.maxSelection = 0;
-    CONFIG.totalRolls = 0;
-    gameState.levelComplete = false;
-    
-    // Set dice count based on level difficulty
-    const level = CONFIG.currentLevel;
-    if (level <= 9) CONFIG.diceCount = 20;      // Easy
-    else if (level <= 29) CONFIG.diceCount = 18; // Medium
-    else if (level <= 49) CONFIG.diceCount = 16; // Hard
-    else if (level <= 69) CONFIG.diceCount = 14; // Critical
-    else if (level <= 89) CONFIG.diceCount = 12; // Advantage
-    else CONFIG.diceCount = 10;                 // Master
-    
-    // Add extra dice if player has them
-    CONFIG.diceCount += CONFIG.extraDice;
-    
-    // Generate targets
-    generateTargets();
-    
-    // Generate tiles
-    generateTiles();
-    
-    // Update UI
+    // Update displays
     updateDisplay();
     updateTargetsDisplay();
     
-    // Save game state
-    gameState.playerData.save();
+    // Update settings toggles
+    document.getElementById('soundToggle').checked = CONFIG.soundEnabled;
+    document.getElementById('musicToggle').checked = CONFIG.musicEnabled;
+    document.getElementById('vibrationToggle').checked = CONFIG.vibrationEnabled;
+    
+    // Start game timer
+    startGameTimer();
+}
+
+function setupEventListeners() {
+    // Roll dice button
+    document.getElementById('rollBtn').addEventListener('click', rollDice);
+    
+    // Hint button
+    document.getElementById('hintBtn').addEventListener('click', useHint);
+    
+    // AD button for extra dice
+    document.getElementById('adBtn').addEventListener('click', getExtraDice);
+    
+    // Reset button
+    document.getElementById('resetBtn').addEventListener('click', resetLevel);
+    
+    // Settings button
+    document.getElementById('settingsBtn').addEventListener('click', showSettings);
+    
+    // Achievements button
+    document.getElementById('achievementsBtn').addEventListener('click', showAchievements);
+    
+    // Sound button
+    document.getElementById('soundBtn').addEventListener('click', toggleSound);
+    
+    // Menu button
+    document.getElementById('menuBtn').addEventListener('click', showQuickMenu);
+    
+    // Message close button
+    document.getElementById('closeMessage')?.addEventListener('click', () => {
+        document.getElementById('messageOverlay').classList.add('hidden');
+    });
+    
+    // Settings panel buttons
+    document.getElementById('saveSettings')?.addEventListener('click', saveSettings);
+    document.getElementById('closeSettings')?.addEventListener('click', () => {
+        document.getElementById('settingsPanel').classList.add('hidden');
+    });
+    
+    // Achievements panel close
+    document.getElementById('closeAchievements')?.addEventListener('click', () => {
+        document.getElementById('achievementsPanel').classList.add('hidden');
+    });
+}
+
+// ============================================
+// GAME LOGIC - LEVEL GENERATION
+// ============================================
+function generateLevel() {
+    gameState.levelComplete = false;
+    CONFIG.selectedTiles = [];
+    CONFIG.maxSelection = 0;
+    
+    // Clear previous board
+    const gameBoard = document.getElementById('gameBoard');
+    gameBoard.innerHTML = '';
+    
+    // Reset timer
+    CONFIG.gameTime = 60 + (CONFIG.currentLevel * 5);
+    document.getElementById('gameTime').textContent = CONFIG.gameTime;
+    
+    // Generate targets for this level
+    generateTargets();
+    
+    // Generate tiles in Vita Mahjong style (layered arrangement)
+    generateTiles();
+    
+    // Update UI
+    updateSelectedCount();
+    updateStars(calculateStars());
 }
 
 function generateTargets() {
     gameState.currentTargets = {};
-    const level = CONFIG.currentLevel;
     
-    // Determine number of target types based on level
-    let targetCount;
-    if (level <= 9) targetCount = 1;      // Easy: 1 type
-    else if (level <= 29) targetCount = 2; // Medium: 2 types
-    else if (level <= 49) targetCount = 3; // Hard: 3 types
-    else targetCount = 4;                  // Expert: all 4 types
+    // Select 3 random categories for this level
+    const allCategories = Object.keys(CONFIG.categories);
+    const selectedCats = [];
     
-    // Select random categories
-    const categories = Object.keys(TILE_CATEGORIES);
-    const selected = [];
-    
-    while (selected.length < targetCount) {
-        const randomCat = categories[Math.floor(Math.random() * categories.length)];
-        if (!selected.includes(randomCat)) {
-            selected.push(randomCat);
+    for (let i = 0; i < 3; i++) {
+        const randomCat = allCategories[Math.floor(Math.random() * allCategories.length)];
+        if (!selectedCats.includes(randomCat)) {
+            selectedCats.push(randomCat);
         }
     }
     
-    // Create targets for selected categories
-    selected.forEach(category => {
-        const catData = TILE_CATEGORIES[category];
-        const baseAmount = Math.floor(level / 3) + 3;
-        const variance = Math.floor(baseAmount * 0.4);
-        const needed = baseAmount + Math.floor(Math.random() * variance);
+    // Create target objects
+    selectedCats.forEach((category, index) => {
+        const catData = CONFIG.categories[category];
+        const needed = 3 + Math.floor(CONFIG.currentLevel / 2); // Increase with level
         
         gameState.currentTargets[category] = {
             name: catData.name,
@@ -404,318 +267,249 @@ function generateTargets() {
             color: catData.color,
             needed: needed,
             collected: 0,
-            points: 100
+            points: catData.points
         };
     });
 }
 
 function generateTiles() {
-    const board = document.getElementById('gameBoard');
-    if (!board) return;
+    const gameBoard = document.getElementById('gameBoard');
+    const totalTiles = 12 + (CONFIG.currentLevel * 2); // More tiles in higher levels
     
-    board.innerHTML = '';
+    // Create layered effect (like Vita Mahjong)
+    let layer = 1;
+    let tilesInLayer = 0;
+    const maxTilesPerLayer = 8;
     
-    // Calculate tile distribution (12 tiles total)
-    const totalTiles = 12;
-    const tileCounts = {
-        animals: Math.floor(totalTiles * 0.30), // 30% = 4 tiles
-        birds: Math.floor(totalTiles * 0.25),   // 25% = 3 tiles
-        flowers: Math.floor(totalTiles * 0.25), // 25% = 3 tiles
-        fruits: Math.floor(totalTiles * 0.20)   // 20% = 2 tiles
-    };
-    
-    // Distribute remaining tiles
-    const totalAssigned = Object.values(tileCounts).reduce((a, b) => a + b, 0);
-    let remaining = totalTiles - totalAssigned;
-    
-    while (remaining > 0) {
-        const categories = Object.keys(tileCounts);
-        const randomCat = categories[Math.floor(Math.random() * categories.length)];
-        tileCounts[randomCat]++;
-        remaining--;
+    for (let i = 0; i < totalTiles; i++) {
+        // Get random category from current targets
+        const targetCats = Object.keys(gameState.currentTargets);
+        const randomCat = targetCats[Math.floor(Math.random() * targetCats.length)];
+        const catData = CONFIG.categories[randomCat];
+        
+        // Create tile element
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        tile.dataset.category = randomCat;
+        tile.dataset.points = catData.points;
+        tile.dataset.layer = layer;
+        
+        // Random tile from category
+        const tileIcon = catData.tiles[Math.floor(Math.random() * catData.tiles.length)];
+        
+        tile.innerHTML = `
+            <div class="tile-icon">${tileIcon}</div>
+            <div class="tile-name">${catData.name}</div>
+            <div class="tile-points">${catData.points}</div>
+        `;
+        
+        // Add Vita Mahjong style depth
+        tile.style.zIndex = layer;
+        tile.style.transform = `translateZ(${layer * 5}px)`;
+        
+        // Click event for tile selection
+        tile.addEventListener('click', () => selectTile(tile));
+        
+        gameBoard.appendChild(tile);
+        
+        // Update layer tracking
+        tilesInLayer++;
+        if (tilesInLayer >= maxTilesPerLayer) {
+            layer++;
+            tilesInLayer = 0;
+        }
     }
     
-    // Create all tiles
-    const allTiles = [];
+    // Add some locked tiles for challenge
+    const allTiles = document.querySelectorAll('.tile');
+    const lockedCount = Math.floor(totalTiles * 0.2); // 20% locked tiles
     
-    Object.keys(tileCounts).forEach(category => {
-        const count = tileCounts[category];
-        const catData = TILE_CATEGORIES[category];
-        
-        for (let i = 0; i < count; i++) {
-            const type = catData.types[Math.floor(Math.random() * catData.types.length)];
-            allTiles.push({
-                category: category,
-                name: type.name,
-                icon: type.icon,
-                points: type.points,
-                color: catData.color,
-                id: `tile_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-            });
-        }
-    });
-    
-    // Shuffle tiles
-    shuffleArray(allTiles);
-    
-    // Create Vita Mahjong 3D layout
-    const layers = [
-        { count: 5, className: 'layer-1', zIndex: 0 },   // Bottom layer
-        { count: 4, className: 'layer-2', zIndex: 30 },  // Middle layer
-        { count: 3, className: 'layer-3', zIndex: 60 }   // Top layer
-    ];
-    
-    let tileIndex = 0;
-    layers.forEach(layer => {
-        const layerDiv = document.createElement('div');
-        layerDiv.className = `tile-layer ${layer.className}`;
-        layerDiv.style.transform = `translateZ(${layer.zIndex}px)`;
-        
-        for (let i = 0; i < layer.count && tileIndex < allTiles.length; i++) {
-            const tile = allTiles[tileIndex];
-            const tileElement = createTileElement(tile, tileIndex);
-            layerDiv.appendChild(tileElement);
-            tileIndex++;
-        }
-        
-        board.appendChild(layerDiv);
-    });
-}
-
-function createTileElement(tileData, index) {
-    const tile = document.createElement('div');
-    tile.className = 'tile';
-    tile.dataset.id = tileData.id;
-    tile.dataset.category = tileData.category;
-    tile.dataset.name = tileData.name;
-    tile.dataset.points = tileData.points;
-    
-    tile.innerHTML = `
-        <div class="tile-icon" style="color: ${tileData.color}">${tileData.icon}</div>
-        <div class="tile-type">${tileData.category}</div>
-    `;
-    
-    tile.addEventListener('click', () => selectTile(tile));
-    return tile;
+    for (let i = 0; i < lockedCount; i++) {
+        const randomTile = allTiles[Math.floor(Math.random() * allTiles.length)];
+        randomTile.classList.add('locked');
+        randomTile.innerHTML = `
+            <div class="tile-icon">🔒</div>
+            <div class="tile-name">LOCKED</div>
+        `;
+        randomTile.onclick = null;
+    }
 }
 
 // ============================================
-// GAME MECHANICS
+// GAME LOGIC - CORE MECHANICS
 // ============================================
-
 function rollDice() {
     if (CONFIG.diceCount <= 0) {
-        showMessage("No dice left! Reset level or get extra dice.", "error");
+        showMessage("No dice left! Watch ad to get more dice.", "error");
         return;
     }
     
     if (CONFIG.maxSelection > 0) {
-        showMessage("Process selected tiles first!", "warning");
+        showMessage("Finish selecting tiles before rolling again!", "info");
         return;
     }
     
-    const dice = document.getElementById('dice');
+    // Deduct dice
+    CONFIG.diceCount--;
+    CONFIG.totalRolls++;
+    
+    // Roll animation
+    playSound('diceRoll');
     const rollBtn = document.getElementById('rollBtn');
-    
-    if (!dice || !rollBtn) return;
-    
-    // Disable button during roll
     rollBtn.disabled = true;
     rollBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ROLLING...';
     
-    // Add rolling animation
-    dice.classList.add('rolling');
-    playSound('dice');
-    
-    // Calculate roll using AI
+    // Random dice roll (1-6)
     setTimeout(() => {
-        const roll = gameState.diceAI.calculateRoll();
+        const diceRoll = Math.floor(Math.random() * 6) + 1;
+        CONFIG.maxSelection = diceRoll;
         
-        // Update dice display
-        dice.classList.remove('rolling');
-        updateDiceFace(roll);
-        
-        // Update game state
-        CONFIG.diceCount--;
-        CONFIG.totalRolls++;
-        CONFIG.maxSelection = roll;
-        CONFIG.selectedTiles = [];
-        
-        // Handle special six
-        gameState.diceAI.handleSpecialSix();
+        // Show dice result
+        showMessage(`🎲 Dice Roll: ${diceRoll}<br>You can select ${diceRoll} tiles`, "success");
         
         // Update UI
-        updateDiceDisplay();
-        rollBtn.disabled = false;
         rollBtn.innerHTML = '<i class="fas fa-redo"></i> ROLL DICE';
-        
-        // Show roll result with voice feedback
-        const feedback = VOICE_FEEDBACK.getFeedback(roll * 100);
-        showMessage(`${feedback} Rolled: ${roll}. Select ${roll} tiles.`, "info");
-        
-        // Check if out of dice
-        if (CONFIG.diceCount <= 0) {
-            setTimeout(checkLevelCompletion, 1000);
-        }
+        rollBtn.disabled = CONFIG.diceCount <= 0;
+        updateSelectedCount();
+        updateDisplay();
         
         // Save game
         gameState.playerData.save();
         
-    }, 1200);
+    }, 1000);
 }
 
-function updateDiceFace(roll) {
-    const dice = document.getElementById('dice');
-    if (!dice) return;
-    
-    // Remove all face classes
-    dice.className = 'dice';
-    
-    // Add class based on roll for 3D effect
-    const faceClasses = {
-        1: 'show-front',
-        2: 'show-right',
-        3: 'show-top',
-        4: 'show-bottom',
-        5: 'show-left',
-        6: 'show-back'
-    };
-    
-    if (faceClasses[roll]) {
-        dice.classList.add(faceClasses[roll]);
-    }
-    
-    // Update dice number display
-    const diceNumber = document.getElementById('diceNumber');
-    if (diceNumber) {
-        diceNumber.textContent = roll;
-    }
-}
-
-function selectTile(tileElement) {
-    if (CONFIG.maxSelection === 0) {
-        showMessage("Roll the dice first!", "warning");
+function selectTile(tile) {
+    if (CONFIG.maxSelection <= 0) {
+        showMessage("Roll the dice first to get selection count!", "info");
         return;
     }
     
     if (CONFIG.selectedTiles.length >= CONFIG.maxSelection) {
-        showMessage(`Already selected ${CONFIG.maxSelection} tiles!`, "warning");
+        showMessage(`You can only select ${CONFIG.maxSelection} tiles this turn!`, "error");
         return;
     }
     
-    if (tileElement.classList.contains('used')) {
+    if (tile.classList.contains('used') || tile.classList.contains('locked')) {
         return;
     }
     
-    if (tileElement.classList.contains('selected')) {
+    if (CONFIG.selectedTiles.includes(tile)) {
         // Deselect tile
-        tileElement.classList.remove('selected');
-        const index = CONFIG.selectedTiles.indexOf(tileElement);
-        if (index > -1) {
-            CONFIG.selectedTiles.splice(index, 1);
-        }
+        const index = CONFIG.selectedTiles.indexOf(tile);
+        CONFIG.selectedTiles.splice(index, 1);
+        tile.classList.remove('selected');
+        playSound('tile');
     } else {
         // Select tile
-        tileElement.classList.add('selected');
-        CONFIG.selectedTiles.push(tileElement);
+        CONFIG.selectedTiles.push(tile);
+        tile.classList.add('selected');
         playSound('tile');
-        
-        // Visual feedback
-        tileElement.style.transform = 'translateY(-15px) scale(1.1)';
-        setTimeout(() => {
-            if (tileElement.parentNode) {
-                tileElement.style.transform = 'translateY(-10px) scale(1.05)';
-            }
-        }, 150);
     }
     
-    // If selected enough tiles, process them
+    updateSelectedCount();
+    
+    // Auto-process when max selection reached
     if (CONFIG.selectedTiles.length === CONFIG.maxSelection) {
-        setTimeout(processSelectedTiles, 600);
+        setTimeout(processSelectedTiles, 800);
     }
 }
 
 function processSelectedTiles() {
     if (CONFIG.selectedTiles.length === 0) return;
     
-    const tileCounts = {};
+    // Calculate points
     let totalPoints = 0;
+    let categoryPoints = {};
+    let completedCategories = [];
     
-    // Count selected tiles by category
     CONFIG.selectedTiles.forEach(tile => {
         const category = tile.dataset.category;
         const points = parseInt(tile.dataset.points) || 100;
         
-        tileCounts[category] = (tileCounts[category] || 0) + 1;
         totalPoints += points;
+        
+        if (!categoryPoints[category]) {
+            categoryPoints[category] = 0;
+        }
+        categoryPoints[category] += points;
     });
     
-    // Update targets and calculate score
+    // Update targets
     let bonusPoints = 0;
-    let completedCategories = [];
     
-    Object.keys(tileCounts).forEach(category => {
+    Object.keys(categoryPoints).forEach(category => {
         if (gameState.currentTargets[category]) {
             const target = gameState.currentTargets[category];
             const previousCollected = target.collected;
             
-            target.collected += tileCounts[category];
+            // Each selected tile counts as 1 collection
+            const tilesOfCategory = CONFIG.selectedTiles.filter(t => t.dataset.category === category).length;
+            target.collected += tilesOfCategory;
             
             // Cap at needed amount
             if (target.collected > target.needed) {
                 target.collected = target.needed;
             }
             
-            // Calculate points for this category
+            // Calculate bonus points
             const collectedNow = target.collected - previousCollected;
-            const categoryPoints = collectedNow * target.points;
-            bonusPoints += categoryPoints;
+            const categoryBonus = collectedNow * target.points;
+            bonusPoints += categoryBonus;
             
-            // Check if category completed
-            if (target.collected === target.needed) {
-                completedCategories.push(target.name);
-                bonusPoints += 500; // Completion bonus
+            // Check completion
+            if (target.collected >= target.needed) {
+                if (!completedCategories.includes(target.name)) {
+                    completedCategories.push(target.name);
+                    bonusPoints += 500; // Completion bonus
+                }
             }
         }
     });
     
-    // Mark tiles as used with animation
+    // Animate tile removal
     CONFIG.selectedTiles.forEach((tile, index) => {
         setTimeout(() => {
             tile.classList.remove('selected');
             tile.classList.add('used');
-            tile.style.opacity = '0.3';
-            tile.style.transform = 'scale(0.8)';
-            tile.style.pointerEvents = 'none';
+            tile.style.transform = 'scale(0) rotate(180deg)';
+            tile.style.opacity = '0';
             
-            // Particle effect
+            // Create particle effect
             createParticleEffect(tile);
-        }, index * 100);
+            
+        }, index * 150);
     });
     
     // Update score
     const oldScore = CONFIG.score;
-    CONFIG.score += totalPoints + bonusPoints;
+    const pointsGained = totalPoints + bonusPoints;
+    CONFIG.score += pointsGained;
+    
+    // Reset selection
     CONFIG.selectedTiles = [];
     CONFIG.maxSelection = 0;
     
     // Update displays
     updateDisplay();
     updateTargetsDisplay();
+    updateSelectedCount();
     
     // Show feedback
-    const scoreGain = (totalPoints + bonusPoints);
-    const feedback = VOICE_FEEDBACK.getFeedback(scoreGain);
+    const feedback = VOICE_FEEDBACK.getFeedback(pointsGained);
+    let message = `🎯 ${feedback} +${pointsGained} points!`;
     
-    let message = `${feedback} +${scoreGain} points!`;
     if (completedCategories.length > 0) {
-        message += `\n✅ ${completedCategories.join(', ')} completed!`;
+        message += `<br>✅ ${completedCategories.join(', ')} completed!`;
+        playSound('win');
+    } else {
+        playSound('success');
     }
     
     showMessage(message, "success");
     
     // Check level completion
-    setTimeout(checkLevelCompletion, 800);
+    setTimeout(checkLevelCompletion, 1000);
     
     // Save game
     gameState.playerData.save();
@@ -731,28 +525,28 @@ function checkLevelCompletion() {
     if (allComplete) {
         gameState.levelComplete = true;
         
-        // Calculate bonuses
+        // Calculate level bonuses
         const diceBonus = CONFIG.diceCount * 50;
-        const levelBonus = CONFIG.currentLevel * 20;
-        const timeBonus = Math.max(0, 300 - CONFIG.totalRolls * 10) * 5;
+        const levelBonus = CONFIG.currentLevel * 100;
+        const timeBonus = Math.max(0, CONFIG.gameTime) * 10;
         const totalBonus = diceBonus + levelBonus + timeBonus;
         
-        // Update score
+        // Add bonus to score
         CONFIG.score += totalBonus;
         
-        // Calculate stars (1-5)
+        // Calculate stars (based on performance)
         const stars = calculateStars();
         
-        // Show victory message
+        // Show victory screen
         setTimeout(() => {
-            playSound('win');
-            
             showMessage(
-                `🎉 LEVEL ${CONFIG.currentLevel} COMPLETE!<br>` +
+                `🏆 LEVEL ${CONFIG.currentLevel} COMPLETE!<br><br>` +
                 `⭐ ${'★'.repeat(stars)}${'☆'.repeat(5-stars)}<br>` +
-                `Bonus: +${totalBonus} points<br>` +
-                `Click anywhere to continue`,
-                "success"
+                `Bonus: +${totalBonus.toLocaleString()} points<br><br>` +
+                `🎲 Dice remaining: ${CONFIG.diceCount}<br>` +
+                `⏱️ Time bonus: +${timeBonus}<br><br>` +
+                `Tap anywhere to continue`,
+                "victory"
             );
             
             // Update UI
@@ -763,234 +557,105 @@ function checkLevelCompletion() {
             addAchievement(`Completed Level ${CONFIG.currentLevel}`);
             
             // Prepare for next level
-            document.getElementById('gameBoard').addEventListener('click', nextLevel, { once: true });
+            document.body.addEventListener('click', nextLevel, { once: true });
             
             // Save game
             gameState.playerData.save();
             
-        }, 1000);
+        }, 1500);
         
     } else if (CONFIG.diceCount <= 0) {
-        // Level failed
-        playSound('lose');
-        
-        const completion = Math.round(getCompletionPercentage());
+        // Game over - out of dice
         showMessage(
-            `❌ Out of dice! Level failed.<br>` +
-            `You collected ${completion}% of targets.<br>` +
-            `Click RESET to try again or use hints.`,
+            `❌ OUT OF DICE!<br><br>` +
+            `Progress: ${getCompletionPercentage()}%<br>` +
+            `Watch ad for more dice or restart level.`,
             "error"
         );
     }
 }
 
 function nextLevel() {
+    // Clear any existing message
+    document.getElementById('messageOverlay').classList.add('hidden');
+    
+    // Increment level
     CONFIG.currentLevel++;
     
-    // Check if all levels completed
+    // Check if game completed
     if (CONFIG.currentLevel > CONFIG.totalLevels) {
-        CONFIG.currentLevel = 1;
-        showMessage("🎊 CONGRATULATIONS! All levels completed! Starting over...", "success");
-        addAchievement("Game Completed!");
-    }
-    
-    // Generate new level
-    generateLevel();
-    
-    // Show level message
-    setTimeout(() => {
-        showMessage(`LEVEL ${CONFIG.currentLevel} - Good luck!`, "info");
-    }, 500);
-}
-
-function resetLevel() {
-    if (confirm("Reset current level? Your progress will be lost for this level.")) {
-        generateLevel();
-        showMessage("Level reset!", "info");
-    }
-}
-
-// ============================================
-// FEATURE SYSTEMS
-// ============================================
-
-function getExtraDice() {
-    showMessage("Watching ad for extra dice...", "info");
-    
-    // Simulate ad watch
-    setTimeout(() => {
-        CONFIG.extraDice++;
-        CONFIG.diceCount += 3;
-        updateDiceDisplay();
-        showMessage("+3 dice added! Total extra dice: " + CONFIG.extraDice, "success");
+        showMessage(
+            `🎊 CONGRATULATIONS!<br><br>` +
+            `You've completed all ${CONFIG.totalLevels} levels!<br>` +
+            `Final Score: ${CONFIG.score.toLocaleString()}<br><br>` +
+            `Starting over with bonus points...`,
+            "victory"
+        );
         
-        // Save game
-        gameState.playerData.save();
-    }, 2000);
-}
-
-function useHint() {
-    if (CONFIG.hints <= 0) {
-        showMessage("No hints left! Watch ad for more.", "error");
-        return;
-    }
-    
-    const incomplete = Object.keys(gameState.currentTargets).filter(
-        cat => gameState.currentTargets[cat].collected < gameState.currentTargets[cat].needed
-    );
-    
-    if (incomplete.length > 0) {
-        CONFIG.hints--;
+        addAchievement("Game Master - Completed All Levels!");
         
-        const randomCat = incomplete[Math.floor(Math.random() * incomplete.length)];
-        const target = gameState.currentTargets[randomCat];
-        const needed = target.needed - target.collected;
-        
-        // Highlight matching tiles
-        const tiles = document.querySelectorAll(`.tile[data-category="${randomCat}"]:not(.used)`);
-        tiles.forEach(tile => {
-            tile.style.boxShadow = '0 0 20px gold';
-            setTimeout(() => {
-                tile.style.boxShadow = '';
-            }, 2000);
-        });
-        
-        showMessage(`💡 Hint: Focus on ${target.name}. Need ${needed} more. Hints left: ${CONFIG.hints}`, "info");
-        updateHintsDisplay();
-        
-        // Save game
-        gameState.playerData.save();
+        // Reset to level 1 with bonus
+        setTimeout(() => {
+            CONFIG.currentLevel = 1;
+            CONFIG.score += 10000; // Completion bonus
+            generateLevel();
+        }, 3000);
     } else {
-        showMessage("All targets complete! Roll dice to finish.", "info");
+        // Generate next level
+        generateLevel();
+        
+        // Show level intro
+        setTimeout(() => {
+            showMessage(`LEVEL ${CONFIG.currentLevel}<br>Good luck!`, "info");
+        }, 500);
     }
-}
-
-function toggleSound() {
-    CONFIG.soundEnabled = !CONFIG.soundEnabled;
-    const soundBtn = document.getElementById('soundBtn');
-    
-    if (soundBtn) {
-        if (CONFIG.soundEnabled) {
-            soundBtn.innerHTML = '<i class="fas fa-volume-up"></i> SOUND ON';
-            soundBtn.style.background = 'linear-gradient(135deg, #7209b7, #3a0ca3)';
-            playSound('tile');
-        } else {
-            soundBtn.innerHTML = '<i class="fas fa-volume-mute"></i> SOUND OFF';
-            soundBtn.style.background = '#666';
-        }
-    }
-    
-    showMessage(CONFIG.soundEnabled ? "Sound enabled" : "Sound disabled", "info");
-    
-    // Save settings
-    gameState.playerData.save();
-}
-
-function toggleMusic() {
-    CONFIG.musicEnabled = !CONFIG.musicEnabled;
-    // Music implementation would go here
-    showMessage(CONFIG.musicEnabled ? "Music enabled" : "Music disabled", "info");
-    gameState.playerData.save();
-}
-
-function toggleVibration() {
-    CONFIG.vibrationEnabled = !CONFIG.vibrationEnabled;
-    showMessage(CONFIG.vibrationEnabled ? "Vibration enabled" : "Vibration disabled", "info");
-    gameState.playerData.save();
-}
-
-function showSettings() {
-    const settingsHTML = `
-        <div class="settings-panel">
-            <h3><i class="fas fa-cog"></i> SETTINGS</h3>
-            
-            <div class="setting-item">
-                <span>Sound Effects</span>
-                <label class="switch">
-                    <input type="checkbox" ${CONFIG.soundEnabled ? 'checked' : ''} onchange="toggleSound()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            
-            <div class="setting-item">
-                <span>Background Music</span>
-                <label class="switch">
-                    <input type="checkbox" ${CONFIG.musicEnabled ? 'checked' : ''} onchange="toggleMusic()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            
-            <div class="setting-item">
-                <span>Vibration</span>
-                <label class="switch">
-                    <input type="checkbox" ${CONFIG.vibrationEnabled ? 'checked' : ''} onchange="toggleVibration()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            
-            <div class="setting-buttons">
-                <button onclick="gameState.playerData.save(); showMessage('Settings saved!', 'success'); this.parentElement.parentElement.remove();">SAVE</button>
-                <button onclick="this.parentElement.parentElement.remove();">CLOSE</button>
-            </div>
-        </div>
-    `;
-    
-    const overlay = document.createElement('div');
-    overlay.className = 'settings-overlay';
-    overlay.innerHTML = settingsHTML;
-    document.body.appendChild(overlay);
 }
 
 // ============================================
 // UTILITY FUNCTIONS
 // ============================================
-
 function updateDisplay() {
-    // Update level
-    const levelElement = document.getElementById('currentLevel');
-    if (levelElement) levelElement.textContent = CONFIG.currentLevel;
+    // Update level display
+    document.getElementById('currentLevel').textContent = CONFIG.currentLevel;
     
     // Update score
-    const scoreElement = document.getElementById('score');
-    if (scoreElement) scoreElement.textContent = CONFIG.score.toLocaleString();
+    document.getElementById('score').textContent = CONFIG.score.toLocaleString();
     
-    // Update dice display
-    updateDiceDisplay();
-    
-    // Update hints display
-    updateHintsDisplay();
-}
-
-function updateDiceDisplay() {
-    const rollsLeft = document.getElementById('rollsLeft');
-    const totalRolls = document.getElementById('totalRolls');
-    
-    if (rollsLeft) rollsLeft.textContent = CONFIG.diceCount;
-    if (totalRolls) totalRolls.textContent = CONFIG.totalRolls;
+    // Update dice count
+    document.getElementById('rollsLeft').textContent = CONFIG.diceCount;
+    document.getElementById('totalRolls').textContent = CONFIG.totalRolls;
     
     // Update roll button state
     const rollBtn = document.getElementById('rollBtn');
-    if (rollBtn) {
-        rollBtn.disabled = CONFIG.diceCount <= 0 || CONFIG.maxSelection > 0;
-    }
+    rollBtn.disabled = CONFIG.diceCount <= 0 || CONFIG.maxSelection > 0;
+    
+    // Update hints count
+    document.getElementById('hintsCount').textContent = CONFIG.score.toLocaleString();
+    
+    // Update dice count
+    document.getElementById('rollsLeft').textContent = CONFIG.diceCount;
+    document.getElementById('totalRolls').textContent = CONFIG.totalRolls;
+    
+    // Update roll button state
+    const rollBtn = document.getElementById('rollBtn');
+    rollBtn.disabled = CONFIG.diceCount <= 0 || CONFIG.maxSelection > 0;
+    
+    // Update hints count
+    document.getElementById('hintsCount').textContent = CONFIG.hints;
 }
 
-function updateHintsDisplay() {
-    const hintsElement = document.getElementById('hintsCount');
-    if (hintsElement) {
-        hintsElement.textContent = CONFIG.hints;
-    }
+function updateSelectedCount() {
+    document.getElementById('selectedCount').textContent = CONFIG.selectedTiles.length;
+    document.getElementById('maxSelect').textContent = CONFIG.maxSelection;
 }
 
 function updateTargetsDisplay() {
     const container = document.getElementById('targetsContainer');
-    if (!container) return;
-    
     container.innerHTML = '';
     
     Object.keys(gameState.currentTargets).forEach(category => {
         const target = gameState.currentTargets[category];
-        const percentage = (target.collected / target.needed) * 100;
+        const percentage = Math.min((target.collected / target.needed) * 100, 100);
         
         const targetItem = document.createElement('div');
         targetItem.className = 'target-item';
@@ -1001,7 +666,7 @@ function updateTargetsDisplay() {
             <div class="target-details">
                 <div class="target-name">${target.name}</div>
                 <div class="target-progress">
-                    <div class="progress-bar" style="width: ${Math.min(percentage, 100)}%; background: ${target.color}"></div>
+                    <div class="progress-bar" style="width: ${percentage}%; background: ${target.color}"></div>
                 </div>
                 <div class="target-count">${target.collected}/${target.needed}</div>
             </div>
@@ -1013,17 +678,378 @@ function updateTargetsDisplay() {
 
 function updateStars(count) {
     const starsElement = document.getElementById('stars');
-    if (!starsElement) return;
-    
     starsElement.innerHTML = '';
+    
     for (let i = 0; i < 5; i++) {
         const star = document.createElement('i');
         star.className = i < count ? 'fas fa-star' : 'far fa-star';
         star.style.color = i < count ? '#FFD700' : '#666';
-        star.style.margin = '0 2px';
         starsElement.appendChild(star);
     }
 }
 
 function calculateStars() {
-    const
+    const completion = getCompletionPercentage();
+    if (completion >= 90) return 5;
+    if (completion >= 75) return 4;
+    if (completion >= 60) return 3;
+    if (completion >= 40) return 2;
+    return 1;
+}
+
+function getCompletionPercentage() {
+    if (Object.keys(gameState.currentTargets).length === 0) return 0;
+    
+    let totalCollected = 0;
+    let totalNeeded = 0;
+    
+    Object.values(gameState.currentTargets).forEach(target => {
+        totalCollected += target.collected;
+        totalNeeded += target.needed;
+    });
+    
+    return Math.round((totalCollected / totalNeeded) * 100);
+}
+
+// ============================================
+// FEATURE FUNCTIONS
+// ============================================
+function useHint() {
+    if (CONFIG.hints <= 0) {
+        showMessage("No hints left! Watch ad to get more hints.", "info");
+        return;
+    }
+    
+    // Find incomplete targets
+    const incomplete = Object.keys(gameState.currentTargets).filter(
+        cat => gameState.currentTargets[cat].collected < gameState.currentTargets[cat].needed
+    );
+    
+    if (incomplete.length === 0) {
+        showMessage("All targets complete! Roll dice to finish.", "info");
+        return;
+    }
+    
+    CONFIG.hints--;
+    playSound('hint');
+    
+    // Pick random incomplete target
+    const randomCat = incomplete[Math.floor(Math.random() * incomplete.length)];
+    const target = gameState.currentTargets[randomCat];
+    const needed = target.needed - target.collected;
+    
+    // Highlight matching tiles
+    const tiles = document.querySelectorAll(`.tile[data-category="${randomCat}"]:not(.used):not(.locked)`);
+    
+    if (tiles.length > 0) {
+        tiles.forEach(tile => {
+            tile.style.boxShadow = '0 0 25px gold, 0 0 50px rgba(255, 215, 0, 0.5)';
+            tile.style.borderColor = 'gold';
+            tile.style.zIndex = '100';
+            
+            setTimeout(() => {
+                tile.style.boxShadow = '';
+                tile.style.borderColor = '';
+                tile.style.zIndex = '';
+            }, 3000);
+        });
+        
+        showMessage(`💡 Hint: Focus on ${target.name}. Need ${needed} more. Hints left: ${CONFIG.hints}`, "info");
+    } else {
+        showMessage(`💡 Hint: You need ${needed} more ${target.name}. No available tiles.`, "info");
+    }
+    
+    updateDisplay();
+    gameState.playerData.save();
+}
+
+function getExtraDice() {
+    showMessage("Watching ad for extra dice...", "info");
+    
+    // Simulate ad view
+    setTimeout(() => {
+        CONFIG.diceCount += 5;
+        CONFIG.extraDice++;
+        
+        // Add achievement
+        addAchievement("Ad Watcher - Got bonus dice!");
+        
+        showMessage(
+            `🎉 +5 DICE ADDED!<br>` +
+            `Total dice: ${CONFIG.diceCount}<br>` +
+            `Extra dice collected: ${CONFIG.extraDice}`,
+            "success"
+        );
+        
+        updateDisplay();
+        gameState.playerData.save();
+        
+    }, 2000);
+}
+
+function resetLevel() {
+    if (confirm("Reset current level? Your progress for this level will be lost.")) {
+        generateLevel();
+        showMessage("Level reset! Good luck!", "info");
+        gameState.playerData.save();
+    }
+}
+
+// ============================================
+// SETTINGS & UI FUNCTIONS
+// ============================================
+function toggleSound() {
+    CONFIG.soundEnabled = !CONFIG.soundEnabled;
+    const soundBtn = document.getElementById('soundBtn');
+    
+    if (CONFIG.soundEnabled) {
+        soundBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+        soundBtn.style.background = 'linear-gradient(135deg, var(--primary), var(--primary-dark))';
+        playSound('tile');
+    } else {
+        soundBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+        soundBtn.style.background = '#666';
+    }
+    
+    showMessage(CONFIG.soundEnabled ? "Sound ON" : "Sound OFF", "info");
+    gameState.playerData.save();
+}
+
+function showSettings() {
+    document.getElementById('settingsPanel').classList.remove('hidden');
+}
+
+function saveSettings() {
+    CONFIG.soundEnabled = document.getElementById('soundToggle').checked;
+    CONFIG.musicEnabled = document.getElementById('musicToggle').checked;
+    CONFIG.vibrationEnabled = document.getElementById('vibrationToggle').checked;
+    
+    showMessage("Settings saved!", "success");
+    setTimeout(() => {
+        document.getElementById('settingsPanel').classList.add('hidden');
+    }, 1000);
+    
+    gameState.playerData.save();
+}
+
+function showAchievements() {
+    const container = document.getElementById('achievementsList');
+    container.innerHTML = '';
+    
+    // Sample achievements (in real game, load from save)
+    const achievements = [
+        { icon: "🥇", title: "First Level", desc: "Complete level 1", date: "Today" },
+        { icon: "🎯", title: "Perfect Match", desc: "Select 6 tiles in one turn", date: "Today" },
+        { icon: "💎", title: "Dice Master", desc: "Roll 3 sixes in a row", date: "Today" },
+        { icon: "🌟", title: "Star Collector", desc: "Get 5 stars on 5 levels", date: "Today" },
+        { icon: "⚡", title: "Speed Runner", desc: "Complete level under 30 seconds", date: "Today" }
+    ];
+    
+    achievements.forEach(ach => {
+        const item = document.createElement('div');
+        item.className = 'achievement-item';
+        item.innerHTML = `
+            <div class="achievement-icon">${ach.icon}</div>
+            <div class="achievement-details">
+                <div class="achievement-title">${ach.title}</div>
+                <div class="achievement-desc">${ach.desc}</div>
+                <div class="achievement-date">${ach.date}</div>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+    
+    document.getElementById('achievementsPanel').classList.remove('hidden');
+}
+
+function addAchievement(title) {
+    // In real implementation, save to localStorage
+    console.log("Achievement unlocked:", title);
+    showMessage(`🏆 Achievement Unlocked: ${title}`, "success");
+}
+
+function showQuickMenu() {
+    const menuHTML = `
+        <div class="message-box">
+            <h3>QUICK MENU</h3>
+            <div style="margin: 20px 0; display: flex; flex-direction: column; gap: 10px;">
+                <button onclick="showSettings()" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:8px;">SETTINGS</button>
+                <button onclick="showAchievements()" style="width:100%; padding:12px; background:var(--warning); color:black; border:none; border-radius:8px;">ACHIEVEMENTS</button>
+                <button onclick="gameState.playerData.reset()" style="width:100%; padding:12px; background:var(--danger); color:white; border:none; border-radius:8px;">RESET GAME</button>
+                <button onclick="document.getElementById('messageOverlay').classList.add('hidden')" style="width:100%; padding:12px; background:var(--gray); color:white; border:none; border-radius:8px;">CLOSE</button>
+            </div>
+        </div>
+    `;
+    
+    const overlay = document.getElementById('messageOverlay');
+    overlay.innerHTML = menuHTML;
+    overlay.classList.remove('hidden');
+}
+
+// ============================================
+// GAME TIMER
+// ============================================
+function startGameTimer() {
+    clearInterval(CONFIG.gameTimer);
+    
+    CONFIG.gameTimer = setInterval(() => {
+        if (CONFIG.gameTime > 0 && !gameState.levelComplete) {
+            CONFIG.gameTime--;
+            document.getElementById('gameTime').textContent = CONFIG.gameTime;
+            
+            // Time warnings
+            if (CONFIG.gameTime === 30) {
+                showMessage("30 seconds remaining!", "warning");
+            } else if (CONFIG.gameTime === 10) {
+                showMessage("10 seconds! Hurry up!", "error");
+            }
+        } else if (CONFIG.gameTime <= 0 && !gameState.levelComplete) {
+            clearInterval(CONFIG.gameTimer);
+            showMessage("⏰ TIME'S UP! Level failed.", "error");
+        }
+    }, 1000);
+}
+
+// ============================================
+// EFFECTS & ANIMATIONS
+// ============================================
+function createParticleEffect(element) {
+    const rect = element.getBoundingClientRect();
+    const particles = 10;
+    
+    for (let i = 0; i < particles; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'fixed';
+        particle.style.width = '8px';
+        particle.style.height = '8px';
+        particle.style.background = 'radial-gradient(circle, gold, orange)';
+        particle.style.borderRadius = '50%';
+        particle.style.left = `${rect.left + rect.width/2}px`;
+        particle.style.top = `${rect.top + rect.height/2}px`;
+        particle.style.zIndex = '1000';
+        particle.style.pointerEvents = 'none';
+        
+        // Random direction
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 2 + Math.random() * 3;
+        const vx = Math.cos(angle) * speed;
+        const vy = Math.sin(angle) * speed;
+        
+        document.body.appendChild(particle);
+        
+        // Animate
+        let opacity = 1;
+        const animate = () => {
+            opacity -= 0.02;
+            particle.style.opacity = opacity;
+            particle.style.left = `${parseFloat(particle.style.left) + vx}px`;
+            particle.style.top = `${parseFloat(particle.style.top) + vy}px`;
+            
+            if (opacity > 0) {
+                requestAnimationFrame(animate);
+            } else {
+                particle.remove();
+            }
+        };
+        
+        requestAnimationFrame(animate);
+    }
+}
+
+function playSound(soundName) {
+    if (!CONFIG.soundEnabled) return;
+    
+    const sounds = {
+        tile: document.getElementById('tileClickSound'),
+        diceRoll: document.getElementById('diceRollSound'),
+        success: document.getElementById('successSound'),
+        win: document.getElementById('winSound'),
+        hint: document.getElementById('hintSound')
+    };
+    
+    const sound = sounds[soundName];
+    if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch(e => console.log("Audio play failed:", e));
+    }
+}
+
+function showMessage(text, type = "info") {
+    const overlay = document.getElementById('messageOverlay');
+    const messageBox = overlay.querySelector('.message-box') || document.createElement('div');
+    
+    messageBox.className = 'message-box';
+    
+    // Set color based on type
+    let color = 'var(--accent)';
+    if (type === 'error') color = 'var(--danger)';
+    if (type === 'success') color = 'var(--success)';
+    if (type === 'warning') color = 'var(--warning)';
+    if (type === 'victory') color = 'gold';
+    
+    messageBox.innerHTML = `
+        <div class="message-text" style="color: ${color}">${text}</div>
+        <button id="closeMessage" class="message-close" style="background: ${color}">OK</button>
+    `;
+    
+    if (!overlay.contains(messageBox)) {
+        overlay.innerHTML = '';
+        overlay.appendChild(messageBox);
+    }
+    
+    overlay.classList.remove('hidden');
+    
+    // Auto-close info messages after 2 seconds
+    if (type === 'info') {
+        setTimeout(() => {
+            overlay.classList.add('hidden');
+        }, 2000);
+    }
+    
+    // Re-attach close button event
+    setTimeout(() => {
+        document.getElementById('closeMessage')?.addEventListener('click', () => {
+            overlay.classList.add('hidden');
+        });
+    }, 100);
+}
+
+// ============================================
+// MOBILE OPTIMIZATIONS
+// ============================================
+// Prevent zoom on double-tap
+document.addEventListener('touchstart', function(event) {
+    if (event.touches.length > 1) {
+        event.preventDefault();
+    }
+}, { passive: false });
+
+// Prevent context menu on long press
+document.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
+    return false;
+});
+
+// Handle orientation changes
+window.addEventListener('orientationchange', function() {
+    setTimeout(() => {
+        window.scrollTo(0, 0);
+    }, 100);
+});
+
+// Handle resize
+window.addEventListener('resize', function() {
+    // Adjust tile sizes for mobile
+    const tiles = document.querySelectorAll('.tile');
+    const isMobile = window.innerWidth <= 768;
+    
+    tiles.forEach(tile => {
+        if (isMobile) {
+            tile.style.width = '60px';
+            tile.style.height = '80px';
+        } else {
+            tile.style.width = '70px';
+            tile.style.height = '90px';
+        }
+    });
+});
