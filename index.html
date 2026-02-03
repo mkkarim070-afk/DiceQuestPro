@@ -2,6 +2,148 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tile Master Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="game.css">
+</head>
+<body>
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loader"></div>
+        <div class="loading-text">Loading Professional Game...</div>
+    </div>
+
+    <div id="gameContainer" class="game-container">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <button class="icon-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+            <div class="game-stats">
+                <div class="level-display">
+                    <span class="label">LEVEL</span>
+                    <span id="currentLevel" class="value">1</span>
+                    <span class="total">/10</span>
+                </div>
+                <div class="score-display">
+                    <div class="stars" id="stars">
+                        <i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
+                        <i class="far fa-star"></i><i class="far fa-star"></i>
+                    </div>
+                    <div class="score">
+                        <i class="fas fa-coins"></i>
+                        <span id="score">0</span>
+                    </div>
+                </div>
+            </div>
+            <button class="icon-btn" id="soundBtn"><i class="fas fa-volume-up"></i></button>
+        </div>
+
+        <!-- Dice Controls -->
+        <div class="controls-section">
+            <div class="dice-controls">
+                <div class="dice-display">
+                    <div class="dice-count">
+                        <i class="fas fa-dice"></i>
+                        <span>DICE: <span id="rollsLeft">10</span>/<span id="totalRolls">0</span></span>
+                    </div>
+                    <button id="rollBtn" class="roll-btn"><i class="fas fa-redo"></i> ROLL DICE</button>
+                </div>
+                <div class="extra-controls">
+                    <button class="hint-btn" id="hintBtn">
+                        <i class="fas fa-lightbulb"></i> HINT (<span id="hintsCount">3</span>)
+                    </button>
+                    <button class="ad-btn" id="adBtn"><i class="fas fa-ad"></i> GET DICE</button>
+                </div>
+            </div>
+            
+            <div class="game-hud">
+                <div class="hud-item">
+                    <i class="fas fa-bullseye"></i>
+                    <span>SELECT: <span id="selectedCount">0</span>/<span id="maxSelect">3</span></span>
+                </div>
+                <div class="hud-item">
+                    <i class="fas fa-clock"></i>
+                    <span>TIME: <span id="gameTime">60</span>s</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Targets -->
+        <div class="targets-container">
+            <div class="section-title">
+                <i class="fas fa-bullseye"></i>
+                <h3>TARGETS TO COLLECT</h3>
+            </div>
+            <div id="targetsContainer" class="targets-grid"></div>
+        </div>
+
+        <!-- Game Board -->
+        <div class="board-container">
+            <div id="gameBoard" class="game-board"></div>
+        </div>
+
+        <!-- Bottom Controls -->
+        <div class="bottom-controls">
+            <button id="resetBtn" class="control-btn"><i class="fas fa-redo-alt"></i> RESET LEVEL</button>
+            <button id="settingsBtn" class="control-btn"><i class="fas fa-cog"></i> SETTINGS</button>
+            <button id="achievementsBtn" class="control-btn"><i class="fas fa-trophy"></i> ACHIEVEMENTS</button>
+        </div>
+    </div>
+
+    <!-- Message Overlay -->
+    <div id="messageOverlay" class="message-overlay hidden">
+        <div class="message-box">
+            <div id="messageText" class="message-text"></div>
+            <button id="closeMessage" class="message-close">OK</button>
+        </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settingsPanel" class="settings-panel hidden">
+        <div class="settings-content">
+            <h2><i class="fas fa-cog"></i> GAME SETTINGS</h2>
+            <div class="settings-group">
+                <div class="setting-item">
+                    <span>Sound Effects</span>
+                    <label class="switch"><input type="checkbox" id="soundToggle" checked><span class="slider"></span></label>
+                </div>
+                <div class="setting-item">
+                    <span>Background Music</span>
+                    <label class="switch"><input type="checkbox" id="musicToggle" checked><span class="slider"></span></label>
+                </div>
+                <div class="setting-item">
+                    <span>Vibration</span>
+                    <label class="switch"><input type="checkbox" id="vibrationToggle"><span class="slider"></span></label>
+                </div>
+            </div>
+            <div class="settings-buttons">
+                <button id="saveSettings" class="btn-primary">SAVE SETTINGS</button>
+                <button id="closeSettings" class="btn-secondary">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievements Panel -->
+    <div id="achievementsPanel" class="achievements-panel hidden">
+        <div class="achievements-content">
+            <h2><i class="fas fa-trophy"></i> ACHIEVEMENTS</h2>
+            <div id="achievementsList" class="achievements-list"></div>
+            <button id="closeAchievements" class="btn-secondary">CLOSE</button>
+        </div>
+    </div>
+
+    <!-- Audio -->
+    <audio id="tileClickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" preload="auto"></audio>
+    <audio id="diceRollSound" src="https://assets.mixkit.co/sfx/preview/mixkit-dice-roll-1994.mp3" preload="auto"></audio>
+    <audio id="successSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" preload="auto"></audio>
+
+    <script src="game.js"></script>
+</body>
+                                              </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tile Master Pro - Vita Mahjong Style Game</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
