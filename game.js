@@ -1052,4 +1052,4 @@ window.addEventListener('resize', function() {
             tile.style.height = '90px';
         }
     });
-});
+});        
