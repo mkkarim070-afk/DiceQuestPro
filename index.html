@@ -2,39 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wild Dice Quest Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tile Master Pro - Vita Mahjong Style Game</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Loading Screen */
-        #loading {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #1a1a2e; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 9999;
-        }
-        .loader {
-            width: 50px; height: 50px; border: 5px solid #4361ee;
-            border-top: 5px solid transparent; border-radius: 50%;
-            animation: spin 1s linear infinite; margin-bottom: 20px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); }
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="game.css">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
 </head>
 <body>
-    <!-- Loading -->
-    <div id="loading">
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
         <div class="loader"></div>
-        <h3 style="color: white;">Loading Wild Dice Quest...</h3>
+        <div class="loading-text">Loading Professional Game...</div>
     </div>
 
-    <!-- Main Game (Hidden until load) -->
-    <div id="gameContainer" style="display: none;">
+    <!-- Main Game Container -->
+    <div id="gameContainer" class="game-container">
+        
         <!-- Top Bar -->
         <div class="top-bar">
-            <button class="icon-btn" id="menuBtn">
+            <button class="icon-btn" id="menuBtn" title="Menu">
                 <i class="fas fa-bars"></i>
             </button>
             
@@ -42,147 +29,162 @@
                 <div class="level-display">
                     <span class="label">LEVEL</span>
                     <span id="currentLevel" class="value">1</span>
-                    <span class="total">/100</span>
+                    <span class="total">/10</span>
                 </div>
                 <div class="score-display">
-                    <div class="stars">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
+                    <div class="stars" id="stars">
+                        <i class="far fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <i class="far fa-star"></i>
                         <i class="far fa-star"></i>
                         <i class="far fa-star"></i>
                     </div>
                     <div class="score">
                         <i class="fas fa-coins"></i>
-                        <span id="scoreValue">0</span>
+                        <span id="score">0</span>
                     </div>
                 </div>
             </div>
             
-            <button class="icon-btn" id="soundBtn">
+            <button class="icon-btn" id="soundBtn" title="Sound">
                 <i class="fas fa-volume-up"></i>
             </button>
         </div>
 
-        <!-- Targets (Candy Crush Style) -->
-        <div class="targets-container">
-            <h3 class="section-title">
-                <i class="fas fa-bullseye"></i> TARGETS
-            </h3>
-            <div class="targets-grid" id="targetsGrid">
-                <!-- Targets added by JS -->
+        <!-- Dice & Controls Section -->
+        <div class="controls-section">
+            <div class="dice-controls">
+                <div class="dice-display">
+                    <div class="dice-count">
+                        <i class="fas fa-dice"></i>
+                        <span>DICE: <span id="rollsLeft">10</span>/<span id="totalRolls">0</span></span>
+                    </div>
+                    <button id="rollBtn" class="roll-btn">
+                        <i class="fas fa-redo"></i> ROLL DICE
+                    </button>
+                </div>
+                
+                <div class="extra-controls">
+                    <button class="hint-btn" id="hintBtn">
+                        <i class="fas fa-lightbulb"></i> HINT (<span id="hintsCount">3</span>)
+                    </button>
+                    <button class="ad-btn" id="adBtn">
+                        <i class="fas fa-ad"></i> GET DICE
+                    </button>
+                </div>
+            </div>
+            
+            <div class="game-hud">
+                <div class="hud-item">
+                    <i class="fas fa-bullseye"></i>
+                    <span>SELECT: <span id="selectedCount">0</span>/<span id="maxSelect">3</span></span>
+                </div>
+                <div class="hud-item">
+                    <i class="fas fa-clock"></i>
+                    <span>TIME: <span id="gameTime">60</span>s</span>
+                </div>
             </div>
         </div>
 
-        <!-- Vita Mahjong Game Board -->
-        <div class="game-board" id="gameBoard">
-            <!-- 3D Tiles added by JS -->
+        <!-- Targets Section -->
+        <div class="targets-container">
+            <div class="section-title">
+                <i class="fas fa-bullseye"></i>
+                <h3>TARGETS TO COLLECT</h3>
+            </div>
+            <div id="targetsContainer" class="targets-grid">
+                <!-- Targets will be generated here -->
+            </div>
         </div>
 
-        <!-- Dice Section -->
-        <div class="dice-section">
-            <div class="dice-container">
-                <div class="dice-3d" id="dice3D">
-                    <div class="face front">1</div>
-                    <div class="face back">6</div>
-                    <div class="face right">3</div>
-                    <div class="face left">4</div>
-                    <div class="face top">2</div>
-                    <div class="face bottom">5</div>
-                </div>
-                
-                <div class="dice-stats">
-                    <div class="stat">
-                        <i class="fas fa-dice"></i>
-                        <span>Rolls: <span id="rollsLeft">15</span>/<span id="totalRolls">15</span></span>
-                    </div>
-                    <div class="stat">
-                        <i class="fas fa-bolt"></i>
-                        <span>Moves: <span id="movesCount">0</span></span>
-                    </div>
-                </div>
-
-                <button class="primary-btn" id="rollBtn">
-                    <i class="fas fa-redo"></i> ROLL DICE
-                </button>
-                
-                <div class="extra-options">
-                    <button class="secondary-btn" id="hintBtn">
-                        <i class="fas fa-lightbulb"></i> HINT (<span id="hintCount">3</span>)
-                    </button>
-                    <button class="secondary-btn" id="extraDiceBtn">
-                        <i class="fas fa-plus-circle"></i> EXTRA DICE
-                    </button>
-                </div>
+        <!-- Game Board -->
+        <div class="board-container">
+            <div id="gameBoard" class="game-board">
+                <!-- Tiles will be generated here -->
             </div>
         </div>
 
         <!-- Bottom Controls -->
-        <div class="controls">
-            <button class="control-btn" id="resetBtn">
-                <i class="fas fa-redo"></i> RESET
+        <div class="bottom-controls">
+            <button id="resetBtn" class="control-btn">
+                <i class="fas fa-redo-alt"></i> RESET LEVEL
             </button>
-            <button class="control-btn" id="themeBtn">
-                <i class="fas fa-palette"></i> THEME
-            </button>
-            <button class="control-btn" id="settingsBtn">
+            <button id="settingsBtn" class="control-btn">
                 <i class="fas fa-cog"></i> SETTINGS
             </button>
-        </div>
-
-        <!-- Message Toast -->
-        <div class="toast" id="toast"></div>
-
-        <!-- Settings Panel (Hidden) -->
-        <div class="settings-panel" id="settingsPanel">
-            <h3><i class="fas fa-cog"></i> SETTINGS</h3>
-            <div class="setting">
-                <span>Music Volume</span>
-                <input type="range" id="musicVolume" min="0" max="100" value="70">
-            </div>
-            <div class="setting">
-                <span>SFX Volume</span>
-                <input type="range" id="sfxVolume" min="0" max="100" value="100">
-            </div>
-            <div class="setting">
-                <span>Vibration</span>
-                <label class="switch">
-                    <input type="checkbox" id="vibrationToggle" checked>
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <button class="close-btn" id="closeSettings">
-                <i class="fas fa-times"></i> CLOSE
+            <button id="achievementsBtn" class="control-btn">
+                <i class="fas fa-trophy"></i> ACHIEVEMENTS
             </button>
         </div>
     </div>
 
+    <!-- Messages Overlay -->
+    <div id="messageOverlay" class="message-overlay hidden">
+        <div class="message-box">
+            <div id="messageText" class="message-text"></div>
+            <button id="closeMessage" class="message-close">OK</button>
+        </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settingsPanel" class="settings-panel hidden">
+        <div class="settings-content">
+            <h2><i class="fas fa-cog"></i> GAME SETTINGS</h2>
+            <div class="settings-group">
+                <div class="setting-item">
+                    <span>Sound Effects</span>
+                    <label class="switch">
+                        <input type="checkbox" id="soundToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <span>Background Music</span>
+                    <label class="switch">
+                        <input type="checkbox" id="musicToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <span>Vibration</span>
+                    <label class="switch">
+                        <input type="checkbox" id="vibrationToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <span>Notifications</span>
+                    <label class="switch">
+                        <input type="checkbox" id="notificationsToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="settings-buttons">
+                <button id="saveSettings" class="btn-primary">SAVE SETTINGS</button>
+                <button id="closeSettings" class="btn-secondary">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievements Panel -->
+    <div id="achievementsPanel" class="achievements-panel hidden">
+        <div class="achievements-content">
+            <h2><i class="fas fa-trophy"></i> ACHIEVEMENTS</h2>
+            <div id="achievementsList" class="achievements-list">
+                <!-- Achievements will be added here -->
+            </div>
+            <button id="closeAchievements" class="btn-secondary">CLOSE</button>
+        </div>
+    </div>
+
     <!-- Audio Elements -->
-    <audio id="diceRollSound" preload="auto"></audio>
-    <audio id="tileSelectSound" preload="auto"></audio>
-    <audio id="successSound" preload="auto"></audio>
-    <audio id="voiceGood" preload="auto"></audio>
-    <audio id="voiceGreat" preload="auto"></audio>
-    <audio id="voiceBrilliant" preload="auto"></audio>
+    <audio id="tileClickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" preload="auto"></audio>
+    <audio id="diceRollSound" src="https://assets.mixkit.co/sfx/preview/mixkit-dice-roll-1994.mp3" preload="auto"></audio>
+    <audio id="successSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" preload="auto"></audio>
+    <audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-notification-2018.mp3" preload="auto"></audio>
+    <audio id="hintSound" src="https://assets.mixkit.co/sfx/preview/mixkit-magic-sparkles-3001.mp3" preload="auto"></audio>
 
-    <!-- Link to CSS -->
-    <link rel="stylesheet" href="style.css">
-    
-    <!-- Game Script -->
     <script src="game.js"></script>
-
-    <!-- Initialize Game -->
-    <script>
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('gameContainer').style.display = 'block';
-                if(typeof initGame === 'function') {
-                    initGame();
-                }
-            }, 1500);
-        });
-    </script>
 </body>
-  </html>
-
+                </html>
