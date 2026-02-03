@@ -1,3 +1,506 @@
+// Game Configuration
+const CONFIG = {
+    soundEnabled: true,
+    currentLevel: 1,
+    totalLevels: 10,
+    score: 0,
+    diceCount: 10,
+    totalRolls: 0,
+    maxSelection: 0,
+    selectedTiles: [],
+    hints: 3,
+    gameTime: 60,
+    
+    categories: {
+        animals: { name: "Animals", icon: "🐾", color: "#4361ee", points: 100, tiles: ["🐘", "🦁", "🐼", "🦊"] },
+        birds: { name: "Birds", icon: "🦜", color: "#4cc9f0", points: 120, tiles: ["🦅", "🦚", "🦢", "🦜"] },
+        fruits: { name: "Fruits", icon: "🍓", color: "#f72585", points: 80, tiles: ["🍎", "🍌", "🍇", "🍓"] },
+        flowers: { name: "Flowers", icon: "🌸", color: "#06d6a0", points: 90, tiles: ["🌹", "🌺", "🌻", "🌸"] }
+    }
+};
+
+const gameState = {
+    currentTargets: {},
+    levelComplete: false
+};
+
+// Initialize Game
+window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        document.getElementById('loadingScreen').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('loadingScreen').style.display = 'none';
+            document.getElementById('gameContainer').style.display = 'flex';
+            initializeGame();
+        }, 500);
+    }, 1500);
+    
+    setupEventListeners();
+});
+
+function initializeGame() {
+    generateLevel();
+    updateDisplay();
+}
+
+function setupEventListeners() {
+    document.getElementById('rollBtn').addEventListener('click', rollDice);
+    document.getElementById('hintBtn').addEventListener('click', useHint);
+    document.getElementById('adBtn').addEventListener('click', getExtraDice);
+    document.getElementById('resetBtn').addEventListener('click', resetLevel);
+    document.getElementById('settingsBtn').addEventListener('click', showSettings);
+    document.getElementById('achievementsBtn').addEventListener('click', showAchievements);
+    document.getElementById('soundBtn').addEventListener('click', toggleSound);
+    document.getElementById('closeMessage')?.addEventListener('click', () => {
+        document.getElementById('messageOverlay').classList.add('hidden');
+    });
+    document.getElementById('saveSettings')?.addEventListener('click', saveSettings);
+    document.getElementById('closeSettings')?.addEventListener('click', () => {
+        document.getElementById('settingsPanel').classList.add('hidden');
+    });
+    document.getElementById('closeAchievements')?.addEventListener('click', () => {
+        document.getElementById('achievementsPanel').classList.add('hidden');
+    });
+}
+
+// Game Logic
+function generateLevel() {
+    gameState.levelComplete = false;
+    CONFIG.selectedTiles = [];
+    CONFIG.maxSelection = 0;
+    
+    const gameBoard = document.getElementById('gameBoard');
+    gameBoard.innerHTML = '';
+    
+    generateTargets();
+    generateTiles();
+    
+    updateSelectedCount();
+    startGameTimer();
+}
+
+function generateTargets() {
+    gameState.currentTargets = {};
+    const allCategories = Object.keys(CONFIG.categories);
+    
+    // Select 3 random categories
+    for (let i = 0; i < 3; i++) {
+        const randomCat = allCategories[Math.floor(Math.random() * allCategories.length)];
+        if (!gameState.currentTargets[randomCat]) {
+            const catData = CONFIG.categories[randomCat];
+            gameState.currentTargets[randomCat] = {
+                name: catData.name,
+                icon: catData.icon,
+                color: catData.color,
+                needed: 3 + Math.floor(CONFIG.currentLevel / 2),
+                collected: 0,
+                points: catData.points
+            };
+        }
+    }
+    
+    updateTargetsDisplay();
+}
+
+function generateTiles() {
+    const gameBoard = document.getElementById('gameBoard');
+    const totalTiles = 12 + (CONFIG.currentLevel * 2);
+    
+    for (let i = 0; i < totalTiles; i++) {
+        const targetCats = Object.keys(gameState.currentTargets);
+        const randomCat = targetCats[Math.floor(Math.random() * targetCats.length)];
+        const catData = CONFIG.categories[randomCat];
+        
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        tile.dataset.category = randomCat;
+        tile.dataset.points = catData.points;
+        
+        const tileIcon = catData.tiles[Math.floor(Math.random() * catData.tiles.length)];
+        
+        tile.innerHTML = `
+            <div class="tile-icon">${tileIcon}</div>
+            <div class="tile-name">${catData.name}</div>
+            <div class="tile-points">${catData.points}</div>
+        `;
+        
+        tile.addEventListener('click', () => selectTile(tile));
+        gameBoard.appendChild(tile);
+    }
+}
+
+function rollDice() {
+    if (CONFIG.diceCount <= 0) {
+        showMessage("No dice left! Watch ad to get more dice.", "error");
+        return;
+    }
+    
+    if (CONFIG.maxSelection > 0) {
+        showMessage("Finish selecting tiles first!", "info");
+        return;
+    }
+    
+    CONFIG.diceCount--;
+    CONFIG.totalRolls++;
+    
+    playSound('diceRoll');
+    const rollBtn = document.getElementById('rollBtn');
+    rollBtn.disabled = true;
+    rollBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ROLLING...';
+    
+    setTimeout(() => {
+        const diceRoll = Math.floor(Math.random() * 6) + 1;
+        CONFIG.maxSelection = diceRoll;
+        
+        showMessage(`🎲 Dice Roll: ${diceRoll}<br>Select ${diceRoll} tiles`, "success");
+        
+        rollBtn.innerHTML = '<i class="fas fa-redo"></i> ROLL DICE';
+        rollBtn.disabled = CONFIG.diceCount <= 0;
+        updateSelectedCount();
+        updateDisplay();
+        
+    }, 1000);
+}
+
+function selectTile(tile) {
+    if (CONFIG.maxSelection <= 0) {
+        showMessage("Roll the dice first!", "info");
+        return;
+    }
+    
+    if (CONFIG.selectedTiles.length >= CONFIG.maxSelection) {
+        showMessage(`Can only select ${CONFIG.maxSelection} tiles!`, "error");
+        return;
+    }
+    
+    if (tile.classList.contains('used')) return;
+    
+    if (CONFIG.selectedTiles.includes(tile)) {
+        const index = CONFIG.selectedTiles.indexOf(tile);
+        CONFIG.selectedTiles.splice(index, 1);
+        tile.classList.remove('selected');
+    } else {
+        CONFIG.selectedTiles.push(tile);
+        tile.classList.add('selected');
+        playSound('tile');
+    }
+    
+    updateSelectedCount();
+    
+    if (CONFIG.selectedTiles.length === CONFIG.maxSelection) {
+        setTimeout(processSelectedTiles, 800);
+    }
+}
+
+function processSelectedTiles() {
+    if (CONFIG.selectedTiles.length === 0) return;
+    
+    let totalPoints = 0;
+    let categoryPoints = {};
+    
+    CONFIG.selectedTiles.forEach(tile => {
+        const category = tile.dataset.category;
+        const points = parseInt(tile.dataset.points);
+        
+        totalPoints += points;
+        categoryPoints[category] = (categoryPoints[category] || 0) + 1;
+    });
+    
+    let bonusPoints = 0;
+    let completedCategories = [];
+    
+    Object.keys(categoryPoints).forEach(category => {
+        if (gameState.currentTargets[category]) {
+            const target = gameState.currentTargets[category];
+            target.collected += categoryPoints[category];
+            
+            if (target.collected > target.needed) {
+                target.collected = target.needed;
+            }
+            
+            const collectedNow = categoryPoints[category];
+            const categoryBonus = collectedNow * target.points;
+            bonusPoints += categoryBonus;
+            
+            if (target.collected >= target.needed && !completedCategories.includes(target.name)) {
+                completedCategories.push(target.name);
+                bonusPoints += 500;
+            }
+        }
+    });
+    
+    CONFIG.selectedTiles.forEach((tile, index) => {
+        setTimeout(() => {
+            tile.classList.remove('selected');
+            tile.classList.add('used');
+            tile.style.transform = 'scale(0) rotate(180deg)';
+            tile.style.opacity = '0';
+        }, index * 150);
+    });
+    
+    const pointsGained = totalPoints + bonusPoints;
+    CONFIG.score += pointsGained;
+    CONFIG.selectedTiles = [];
+    CONFIG.maxSelection = 0;
+    
+    updateDisplay();
+    updateTargetsDisplay();
+    updateSelectedCount();
+    
+    let message = `🎯 +${pointsGained} points!`;
+    if (completedCategories.length > 0) {
+        message += `<br>✅ ${completedCategories.join(', ')} completed!`;
+        playSound('success');
+    }
+    
+    showMessage(message, "success");
+    
+    setTimeout(checkLevelCompletion, 1000);
+}
+
+function checkLevelCompletion() {
+    const allComplete = Object.values(gameState.currentTargets).every(
+        target => target.collected >= target.needed
+    );
+    
+    if (allComplete) {
+        gameState.levelComplete = true;
+        
+        const diceBonus = CONFIG.diceCount * 50;
+        const levelBonus = CONFIG.currentLevel * 100;
+        const totalBonus = diceBonus + levelBonus;
+        
+        CONFIG.score += totalBonus;
+        
+        setTimeout(() => {
+            showMessage(
+                `🏆 LEVEL ${CONFIG.currentLevel} COMPLETE!<br>` +
+                `Bonus: +${totalBonus} points<br>` +
+                `Tap to continue`,
+                "victory"
+            );
+            
+            updateDisplay();
+            document.body.addEventListener('click', nextLevel, { once: true });
+            
+        }, 1500);
+    } else if (CONFIG.diceCount <= 0) {
+        showMessage("❌ Out of dice! Level failed.", "error");
+    }
+}
+
+function nextLevel() {
+    document.getElementById('messageOverlay').classList.add('hidden');
+    
+    CONFIG.currentLevel++;
+    if (CONFIG.currentLevel > CONFIG.totalLevels) {
+        CONFIG.currentLevel = 1;
+        CONFIG.score += 10000;
+        showMessage("🎊 All levels completed! Starting over...", "victory");
+    }
+    
+    generateLevel();
+    
+    setTimeout(() => {
+        showMessage(`LEVEL ${CONFIG.currentLevel}<br>Good luck!`, "info");
+    }, 500);
+}
+
+// Utility Functions
+function updateDisplay() {
+    document.getElementById('currentLevel').textContent = CONFIG.currentLevel;
+    document.getElementById('score').textContent = CONFIG.score.toLocaleString();
+    document.getElementById('rollsLeft').textContent = CONFIG.diceCount;
+    document.getElementById('totalRolls').textContent = CONFIG.totalRolls;
+    document.getElementById('rollBtn').disabled = CONFIG.diceCount <= 0 || CONFIG.maxSelection > 0;
+    document.getElementById('hintsCount').textContent = CONFIG.hints;
+}
+
+function updateSelectedCount() {
+    document.getElementById('selectedCount').textContent = CONFIG.selectedTiles.length;
+    document.getElementById('maxSelect').textContent = CONFIG.maxSelection;
+}
+
+function updateTargetsDisplay() {
+    const container = document.getElementById('targetsContainer');
+    container.innerHTML = '';
+    
+    Object.keys(gameState.currentTargets).forEach(category => {
+        const target = gameState.currentTargets[category];
+        const percentage = Math.min((target.collected / target.needed) * 100, 100);
+        
+        const targetItem = document.createElement('div');
+        targetItem.className = 'target-item';
+        targetItem.innerHTML = `
+            <div class="target-icon" style="background: ${target.color}">
+                ${target.icon}
+            </div>
+            <div class="target-details">
+                <div class="target-name">${target.name}</div>
+                <div class="target-progress">
+                    <div class="progress-bar" style="width: ${percentage}%; background: ${target.color}"></div>
+                </div>
+                <div class="target-count">${target.collected}/${target.needed}</div>
+            </div>
+        `;
+        
+        container.appendChild(targetItem);
+    });
+}
+
+// Feature Functions
+function useHint() {
+    if (CONFIG.hints <= 0) {
+        showMessage("No hints left!", "info");
+        return;
+    }
+    
+    const incomplete = Object.keys(gameState.currentTargets).filter(
+        cat => gameState.currentTargets[cat].collected < gameState.currentTargets[cat].needed
+    );
+    
+    if (incomplete.length === 0) {
+        showMessage("All targets complete!", "info");
+        return;
+    }
+    
+    CONFIG.hints--;
+    const randomCat = incomplete[Math.floor(Math.random() * incomplete.length)];
+    const target = gameState.currentTargets[randomCat];
+    
+    const tiles = document.querySelectorAll(`.tile[data-category="${randomCat}"]:not(.used)`);
+    tiles.forEach(tile => {
+        tile.style.boxShadow = '0 0 25px gold';
+        setTimeout(() => {
+            tile.style.boxShadow = '';
+        }, 3000);
+    });
+    
+    showMessage(`💡 Hint: Focus on ${target.name}`, "info");
+    updateDisplay();
+}
+
+function getExtraDice() {
+    showMessage("Watching ad for extra dice...", "info");
+    
+    setTimeout(() => {
+        CONFIG.diceCount += 5;
+        showMessage(`🎉 +5 DICE ADDED!<br>Total: ${CONFIG.diceCount}`, "success");
+        updateDisplay();
+    }, 2000);
+}
+
+function resetLevel() {
+    if (confirm("Reset current level?")) {
+        generateLevel();
+        showMessage("Level reset!", "info");
+    }
+}
+
+// Settings & UI
+function toggleSound() {
+    CONFIG.soundEnabled = !CONFIG.soundEnabled;
+    const soundBtn = document.getElementById('soundBtn');
+    
+    if (CONFIG.soundEnabled) {
+        soundBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+        soundBtn.style.background = 'linear-gradient(135deg, #4361ee, #3a0ca3)';
+        playSound('tile');
+    } else {
+        soundBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+        soundBtn.style.background = '#666';
+    }
+    
+    showMessage(CONFIG.soundEnabled ? "Sound ON" : "Sound OFF", "info");
+}
+
+function showSettings() {
+    document.getElementById('settingsPanel').classList.remove('hidden');
+}
+
+function saveSettings() {
+    CONFIG.soundEnabled = document.getElementById('soundToggle').checked;
+    CONFIG.musicEnabled = document.getElementById('musicToggle').checked;
+    
+    showMessage("Settings saved!", "success");
+    setTimeout(() => {
+        document.getElementById('settingsPanel').classList.add('hidden');
+    }, 1000);
+}
+
+function showAchievements() {
+    const container = document.getElementById('achievementsList');
+    container.innerHTML = '';
+    
+    const achievements = [
+        { icon: "🥇", title: "First Level", desc: "Complete level 1" },
+        { icon: "🎯", title: "Perfect Match", desc: "Select 6 tiles in one turn" },
+        { icon: "💎", title: "Dice Master", desc: "Roll 3 sixes in a row" }
+    ];
+    
+    achievements.forEach(ach => {
+        const item = document.createElement('div');
+        item.className = 'achievement-item';
+        item.innerHTML = `
+            <div class="achievement-icon">${ach.icon}</div>
+            <div class="achievement-details">
+                <div class="achievement-title">${ach.title}</div>
+                <div class="achievement-desc">${ach.desc}</div>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+    
+    document.getElementById('achievementsPanel').classList.remove('hidden');
+}
+
+function startGameTimer() {
+    clearInterval(CONFIG.gameTimer);
+    CONFIG.gameTime = 60 + (CONFIG.currentLevel * 5);
+    document.getElementById('gameTime').textContent = CONFIG.gameTime;
+    
+    CONFIG.gameTimer = setInterval(() => {
+        if (CONFIG.gameTime > 0 && !gameState.levelComplete) {
+            CONFIG.gameTime--;
+            document.getElementById('gameTime').textContent = CONFIG.gameTime;
+        } else if (CONFIG.gameTime <= 0 && !gameState.levelComplete) {
+            clearInterval(CONFIG.gameTimer);
+            showMessage("⏰ TIME'S UP!", "error");
+        }
+    }, 1000);
+}
+
+function playSound(soundName) {
+    if (!CONFIG.soundEnabled) return;
+    
+    const sound = document.getElementById(soundName + 'Sound');
+    if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch(e => console.log("Audio:", e));
+    }
+}
+
+function showMessage(text, type = "info") {
+    const overlay = document.getElementById('messageOverlay');
+    const messageBox = overlay.querySelector('.message-box');
+    
+    let color = '#4cc9f0';
+    if (type === 'error') color = '#ef476f';
+    if (type === 'success') color = '#06d6a0';
+    if (type === 'victory') color = '#ffd166';
+    
+    document.getElementById('messageText').innerHTML = text;
+    overlay.classList.remove('hidden');
+    
+    const closeBtn = document.getElementById('closeMessage');
+    closeBtn.style.background = color;
+    
+    if (type === 'info') {
+        setTimeout(() => {
+            overlay.classList.add('hidden');
+        }, 2000);
+    }
+                 }
 // ============================================
 // PROFESSIONAL GAME CONFIGURATION
 // ============================================
